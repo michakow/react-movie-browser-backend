@@ -5,6 +5,8 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
+const port = process.env.PORT || 8888
+
 const opinions = []
 
 app.get('/', (req, res) => {
@@ -33,7 +35,7 @@ app.delete('/opinions/:opinionID', (req, res) => {
   }
 })
 
-app.listen(8888, () => {
-  console.log('aplikacja wystartowała na porcie 8888')
+app.listen(port, () => {
+  console.log(`aplikacja wystartowała na porcie ${port}`)
 })
 
