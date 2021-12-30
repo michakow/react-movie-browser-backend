@@ -12,15 +12,29 @@ const User = require('./db/models/user')
 const createUser = async (data) => {
   const checkAvailable = await User.findOne({ name: data.name })
   if(checkAvailable){
-    console.log('istnieje user o loginie: ', data.name)
+    console.log('istnieje user o loginie:', data.name)
     return false
-  }
-  else
-  {
+  }else{
     const user = new User(data)
     await user.save()
-    console.log('utworzono nowego usera: ', data.name)
+    console.log('utworzono nowego usera:', data.name)
     return true
+  }
+}
+
+const authUser = async (data) => {
+  const userExist = await User.findOne({ name: data.name })
+  if(userExist){
+    if(data.password === userExist.password){
+      console.log('poprawne logowanie do konta:', data.name)
+      return true
+    }else{
+      console.log('zly login lub haslo do konta:', data.name)
+      return false
+    }
+  }else{
+    console.log('zly login lub haslo do konta:', data.name)
+    return false
   }
 }
 
@@ -43,13 +57,19 @@ app.post('/opinions', (req, res) => {
   res.status(200).end()
 })
 
-app.post('/users', async (req, res) => {
+app.post('/users/create', async (req, res) => {
   const data = {
     ...req.body,
     favMoviesID: [1, 4, 6]
   }
   const userCreated = await createUser(data)
   if(userCreated) res.status(200).send({ code: 1 })
+  else res.status(400).send({ code: 0 })
+})
+
+app.post('/users/auth', async (req, res) => {
+  const authCorrect = await authUser(req.body)
+  if(authCorrect) res.status(200).send({ code: 1 })
   else res.status(400).send({ code: 0 })
 })
 
