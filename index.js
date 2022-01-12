@@ -3,6 +3,7 @@ const cors = require('cors')
 const app = express()
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 app.use(cors())
 app.use(express.json())
@@ -10,9 +11,10 @@ app.use(express.json())
 require('./db/mongoose.js')
 const User = require('./db/models/user')
 const Opinion = require('./db/models/opinion')
-
+const dbtoken = require('./configtoken.js')
 
 const port = process.env.PORT || 8888
+const accessToken = process.env.ACCESS_TOKEN || dbtoken
 
 app.listen(port, () => {
   console.log(`aplikacja wystartowała na porcie ${port}`)
@@ -68,8 +70,10 @@ app.post('/users/create', async (req, res) => {
 
 app.post('/users/auth', async (req, res) => {
   const authCorrect = await authUser(req.body)
-  if(authCorrect) res.status(200).send({ code: 1 })
-  else res.status(400).send({ code: 0 })
+  if(authCorrect){
+    const token = jwt.sign(req.body.name, accessToken)
+    res.status(200).send({ code: 1, token })
+  }else res.status(400).send({ code: 0 })
 })
 
 //Opinion
@@ -82,16 +86,21 @@ const addOpinion = async (data) => {
 
 app.get('/opinions', async (req, res) => {
   const opinions = await Opinion.find({})
-  console.log(opinions)
   res.json({opinions})
 })
 
-app.post('/opinions', async (req, res) => {
-  const data = {
-    ...req.body
-  }
-  await addOpinion(data)
-  res.status(200).send({ code: 1 })
+app.post('/opinions', (req, res) => {
+  const token = req.headers['authorization']
+  if(!token) return res.status(400).send({ code: 0 })
+  jwt.verify(token, accessToken, (error, reqdata) => {
+    if(error) return res.status(400).send({ code: 0 })
+    
+    const data = {
+      ...req.body
+    }
+    addOpinion(data)
+    res.status(200).send({ code: 1 })
+  })
 })
 
 app.delete('/opinions/:opinionID', async (req, res) => {
