@@ -5,11 +5,14 @@ const opinionSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  date: {
+    type: String
+  },
   author: {
     type: String
   }
 })
 
-const Opinion = mongoose.model('Opinion', opinionSchema)
+const Opinion = mongoose.model('Opinion', opinionSchema, "opinions")
 
 module.exports = Opinion
