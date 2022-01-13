@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
-const dburl = require('../configdb.js')
+// const dburl = require('../configdb.js')
 
-const url = process.env.DATABASE_URL || dburl
+const url = process.env.DATABASE_URL //|| dburl
 
 mongoose.connect(url, {
   useNewUrlParser: true,

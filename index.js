@@ -11,10 +11,10 @@ app.use(express.json())
 require('./db/mongoose.js')
 const User = require('./db/models/user')
 const Opinion = require('./db/models/opinion')
-const dbtoken = require('./configtoken.js')
+// const dbtoken = require('./configtoken.js')
 
 const port = process.env.PORT || 8888
-const accessToken = process.env.ACCESS_TOKEN || dbtoken
+const accessToken = process.env.ACCESS_TOKEN //|| dbtoken
 
 app.listen(port, () => {
   console.log(`aplikacja wystartowała na porcie ${port}`)
