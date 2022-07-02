@@ -27,16 +27,16 @@ const isValidObjectID = (id) => {
 };
 
 const activeUser = async (req, res) => {
-  if (!isValidObjectID(req.body.userID))
-    return res.status(400).send({ code: 0 });
+  // if (!isValidObjectID(req.body.userID))
+  //   return res.status(400).send({ code: 0 });
 
-  const userExist = await User.findById(req.body.userID);
+  const userExist = await User.findOne({ name: req.body.userName });
   if (userExist) {
-    if (userExist.isActive) res.status(400).send({ code: 0 });
-    else {
-      await User.findByIdAndUpdate(req.body.userID, { isActive: true });
-      res.status(200).send({ code: 1 });
-    }
+    await User.findOneAndUpdate(
+      { name: req.body.userName },
+      { isActive: true }
+    );
+    res.status(200).send({ code: 1 });
   } else res.status(400).send({ code: 0 });
 };
 
@@ -48,14 +48,14 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const verifyEmail = ({ _id, email }) => {
+const verifyEmail = ({ name, email }) => {
   const url = "https://michakow.github.io/react-movie-browser/#/";
   const mailOption = {
     from: process.env.AUTH_EMAIL,
     to: email,
     subject: "Email verification",
     html: `<p>Verify your email to complete the signup.</p><p>Click <a href=${
-      url + "verify/" + _id
+      url + "verify/" + name
     }>here</a>.</p>`,
   };
   transporter.sendMail(mailOption);
