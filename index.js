@@ -27,12 +27,15 @@ const isValidObjectID = (id) => {
 };
 
 const activeUser = async (req, res) => {
-  if (!isValidObjectID(req.body.userID))
-    return res.status(400).send({ code: 0 });
+  // if (!isValidObjectID(req.body.userID))
+  //   return res.status(400).send({ code: 0 });
 
-  const userExist = await Users.findById(req.body.userID);
+  const userExist = await Users.findOne({ name: req.body.userName });
   if (userExist) {
-    await Users.findByIdAndUpdate(req.body.userID, { isActive: true });
+    await Users.findOneAndUpdate(
+      { name: req.body.userName },
+      { isActive: true }
+    );
     res.status(200).send({ code: 1 });
   } else res.status(400).send({ code: 0 });
 };
