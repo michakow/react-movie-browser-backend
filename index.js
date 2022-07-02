@@ -48,14 +48,14 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const verifyEmail = ({ _id, email }) => {
-  const url = "https://michakow.github.io/react-movie-browser/";
+const verifyEmail = ({ name, email }) => {
+  const url = "https://michakow.github.io/react-movie-browser/#/";
   const mailOption = {
     from: process.env.AUTH_EMAIL,
     to: email,
     subject: "Email verification",
     html: `<p>Verify your email to complete the signup.</p><p>Click <a href=${
-      url + "verify/" + _id
+      url + "verify/" + name
     }>here</a>.</p>`,
   };
   transporter.sendMail(mailOption);
